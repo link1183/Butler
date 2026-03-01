@@ -1,0 +1,182 @@
+{
+  "rules": [
+    {
+      "trigger": {
+        "type": "chat.message",
+        "pattern": "!scene {scene}"
+      },
+      "execution": {
+        "mode": "parallel"
+      },
+      "actions": [
+        {
+          "type": "set_var",
+          "args": {
+            "name": "current_scene",
+            "value": "{{scene}}"
+          }
+        },
+        {
+          "type": "switch_scene",
+          "args": {
+            "scene": "{{scene}}"
+          }
+        },
+        {
+          "type": "send_message",
+          "args": {
+            "message": "@{{user}} switched scene to {{scene}}."
+          }
+        }
+      ]
+    },
+
+    {
+      "trigger": {
+        "type": "chat.message",
+        "pattern": "!temp {scene}"
+      },
+      "execution": {
+        "mode": "replace"
+      },
+      "actions": [
+        {
+          "type": "set_var",
+          "args": {
+            "name": "previous_scene",
+            "value": "{{vars.current_scene|Live}}"
+          }
+        },
+        {
+          "type": "switch_scene",
+          "args": {
+            "scene": "{{scene}}"
+          }
+        },
+        {
+          "type": "wait",
+          "args": {
+            "duration": "10s"
+          }
+        },
+        {
+          "type": "switch_scene",
+          "args": {
+            "scene": "{{vars.previous_scene|Live}}"
+          }
+        },
+        {
+          "type": "send_message",
+          "args": {
+            "message": "@{{user}} restored scene to {{vars.previous_scene|Live}}."
+          }
+        }
+      ]
+    },
+
+    {
+      "trigger": {
+        "type": "chat.message",
+        "equals": "!panic"
+      },
+      "execution": {
+        "mode": "single"
+      },
+      "actions": [
+        {
+          "type": "set_var",
+          "args": {
+            "name": "panic_mode",
+            "value": "true"
+          }
+        },
+        {
+          "type": "switch_scene",
+          "args": {
+            "scene": "BRB"
+          }
+        },
+        {
+          "type": "send_message",
+          "args": {
+            "message": "@{{user}} enabled panic mode."
+          }
+        }
+      ]
+    },
+
+    {
+      "trigger": {
+        "type": "chat.message",
+        "equals": "!clearpanic"
+      },
+      "actions": [
+        {
+          "type": "set_var",
+          "args": {
+            "name": "panic_mode",
+            "value": "false"
+          }
+        },
+        {
+          "type": "send_message",
+          "args": {
+            "message": "@{{user}} cleared panic mode."
+          }
+        }
+      ]
+    },
+
+    {
+      "trigger": {
+        "type": "chat.message",
+        "equals": "!restore"
+      },
+      "conditions": [
+        {
+          "var_exists": {
+            "name": "current_scene"
+          }
+        },
+        {
+          "var_equals": {
+            "name": "panic_mode",
+            "value": "false"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "type": "switch_scene",
+          "args": {
+            "scene": "{{vars.current_scene|Live}}"
+          }
+        },
+        {
+          "type": "send_message",
+          "args": {
+            "message": "@{{user}} restored scene to {{vars.current_scene|Live}}."
+          }
+        }
+      ]
+    },
+
+    {
+      "trigger": {
+        "type": "chat.message",
+        "contains": "hello"
+      },
+      "execution": {
+        "mode": "ignore"
+      },
+      "actions": [
+        {
+          "type": "send_message",
+          "args": {
+            "message": "hi prince"
+          }
+        }
+      ]
+    }
+  ]
+}
