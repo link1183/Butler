@@ -230,8 +230,6 @@ func formatValue(value any) string {
 		return strconv.Quote(v.String())
 	case error:
 		return strconv.Quote(v.Error())
-	case time.Time:
-		return strconv.Quote(v.Format(time.RFC3339))
 	default:
 		return fmt.Sprintf("%v", value)
 	}
