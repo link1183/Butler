@@ -8,14 +8,15 @@ import (
 	"sort"
 	"strings"
 	"syscall"
+	"time"
 
 	"twitch-obs-bot/auth"
 	"twitch-obs-bot/automation"
 	automationactions "twitch-obs-bot/automation/actions"
 	"twitch-obs-bot/events"
 	"twitch-obs-bot/logging"
+	obsservice "twitch-obs-bot/services/obs"
 
-	"github.com/andreykaipov/goobs"
 	twitch "github.com/gempir/go-twitch-irc/v4"
 )
 
@@ -89,11 +90,8 @@ func main() {
 	// OBS
 	// --------------------------------------------------
 
-	obs, err := goobs.New("localhost:4455", goobs.WithPassword(obsPassword))
-	if err != nil {
-		fatal(obsLog, "connection failed", slog.Any("error", err))
-	}
-	obsLog.Info("connected")
+	obs := obsservice.NewManager("localhost:4455", obsPassword, obsLog)
+	obs.Start(ctx, 10*time.Second)
 
 	// --------------------------------------------------
 	// Event Bus

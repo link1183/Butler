@@ -3,14 +3,14 @@ package actions
 import (
 	"context"
 	"fmt"
-
-	obsservice "twitch-obs-bot/services/obs"
-
-	"github.com/andreykaipov/goobs"
 )
 
+type SceneSwitcher interface {
+	SwitchScene(scene string) error
+}
+
 type SwitchSceneAction struct {
-	Obs *goobs.Client
+	Obs SceneSwitcher
 }
 
 func (a *SwitchSceneAction) Execute(ctx context.Context, args map[string]string) error {
@@ -19,5 +19,9 @@ func (a *SwitchSceneAction) Execute(ctx context.Context, args map[string]string)
 		return fmt.Errorf("missing scene")
 	}
 
-	return obsservice.SwitchScene(a.Obs, scene)
+	if a.Obs == nil {
+		return fmt.Errorf("obs unavailable")
+	}
+
+	return a.Obs.SwitchScene(scene)
 }
