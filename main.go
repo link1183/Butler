@@ -150,6 +150,11 @@ func main() {
 		Channel: channel,
 	})
 
+	registry.Register("send_message", &automationactions.SendMessageAction{
+		Client: client,
+		Channel: channel,
+	})
+
 	client.OnConnect(func() {
 		twitchLog.Info("connected")
 	})
